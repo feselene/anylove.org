@@ -16,12 +16,19 @@
   <h1>Human-to-Human Chat</h1>
 </header>
 
+<!-- Chat Container -->
 <div id="chat-container">
+  <!-- Messages will be shown here -->
   <div id="messages"></div>
+  
+  <!-- Input for typing messages -->
   <input type="text" id="messageInput" placeholder="Type a message..." />
+  
+  <!-- Button to send messages -->
   <button id="sendButton">Send</button>
 </div>
 
+<!-- JS Scripts -->
 <script>
   // Firebase configuration
   const firebaseConfig = {
@@ -37,34 +44,51 @@
   const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
+  // Select elements from the DOM
   const messagesDiv = document.getElementById('messages');
   const messageInput = document.getElementById('messageInput');
   const sendButton = document.getElementById('sendButton');
 
-  // Send a new message
+  // Function to add message to the chat box directly
+  const addMessageToUI = (message) => {
+    const messageElement = document.createElement('p');
+    messageElement.textContent = message;
+    messagesDiv.appendChild(messageElement);
+  };
+
+  // Send a new message when the send button is clicked
   sendButton.addEventListener('click', () => {
     const message = messageInput.value;
     if (message) {
+      // Add message to Firestore
       db.collection('messages').add({
         text: message,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        console.log("Message added to Firestore: ", message);
+      }).catch((error) => {
+        console.error("Error adding message to Firestore: ", error);
       });
+
+      // Add message to the UI immediately (so the user sees it)
+      addMessageToUI(message);
+      
+      // Clear the input field
       messageInput.value = '';
     }
   });
 
-  // Listen for new messages in real-time
+  // Listen for new messages in real-time from Firestore
   db.collection('messages').orderBy('timestamp').onSnapshot((snapshot) => {
-    messagesDiv.innerHTML = '';
+    messagesDiv.innerHTML = ''; // Clear the current messages
     snapshot.forEach((doc) => {
       const messageData = doc.data();
-      const messageElement = document.createElement('p');
-      messageElement.textContent = messageData.text;
-      messagesDiv.appendChild(messageElement);
+      addMessageToUI(messageData.text); // Display new messages
     });
   });
 </script>
 
+<!-- Footer -->
 <footer>
   <p>&copy; 2024 Anylove</p>
 </footer>
