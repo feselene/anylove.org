@@ -53,7 +53,7 @@
   const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // Select elements from the DOMs
+  // Select elements from the DOM
   const messagesDiv = document.getElementById('messages');
   const messageInput = document.getElementById('messageInput');
   const sendButton = document.getElementById('sendButton');
@@ -69,14 +69,15 @@
   sendButton.addEventListener('click', () => {
     const message = messageInput.value;
     if (message) {
+      console.log('Sending message:', message); // Log the message
       // Add message to Firestore
       db.collection('messages').add({
         text: message,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(() => {
-        console.log("Message added to Firestore: ", message);
+        console.log('Message successfully added to Firestore:', message); // Confirm addition
       }).catch((error) => {
-        console.error("Error adding message to Firestore: ", error);
+        console.error('Error adding message to Firestore:', error); // Log errors
       });
 
       // Add message to the UI immediately (so the user sees it)
@@ -89,9 +90,11 @@
 
   // Listen for new messages in real-time from Firestore
   db.collection('messages').orderBy('timestamp').onSnapshot((snapshot) => {
+    console.log('Snapshot received:', snapshot.docs.length, 'messages'); // Log the snapshot
     messagesDiv.innerHTML = ''; // Clear the current messages
     snapshot.forEach((doc) => {
       const messageData = doc.data();
+      console.log('Message from Firestore:', messageData); // Log each message from Firestore
       addMessageToUI(messageData.text); // Display new messages
     });
   });
