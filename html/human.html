@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Human Chat</title>
   <link rel="stylesheet" href="../css/style.css"> <!-- Link to your external CSS file -->
-  
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js"></script>
 </head>
 <body>
 
@@ -37,22 +33,6 @@
 </div>
 
 <script>
-  // Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAr9RlM8ONl3IcXU5Ner5XIXmxhUqkd0bo",
-    authDomain: "anyloveorg.firebaseapp.com",
-    databaseURL: "https://anyloveorg-default-rtdb.firebaseio.com",
-    projectId: "anyloveorg",
-    storageBucket: "anyloveorg.appspot.com",
-    messagingSenderId: "611203636730",
-    appId: "1:611203636730:web:34ce602a44c6defdd45843",
-    measurementId: "G-LKZNJPTG0F"
-  };
-
-  // Initialize Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
   // Select elements from the DOM
   const messagesDiv = document.getElementById('messages');
   const messageInput = document.getElementById('messageInput');
@@ -70,33 +50,11 @@
     const message = messageInput.value;
     if (message) {
       console.log('Sending message:', message); // Log the message
-      // Add message to Firestore
-      db.collection('messages').add({
-        text: message,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(() => {
-        console.log('Message successfully added to Firestore:', message); // Confirm addition
-      }).catch((error) => {
-        console.error('Error adding message to Firestore:', error); // Log errors
-      });
-
       // Add message to the UI immediately (so the user sees it)
       addMessageToUI(message);
-      
       // Clear the input field
       messageInput.value = '';
     }
-  });
-
-  // Listen for new messages in real-time from Firestore
-  db.collection('messages').orderBy('timestamp').onSnapshot((snapshot) => {
-    console.log('Snapshot received:', snapshot.docs.length, 'messages'); // Log the snapshot
-    messagesDiv.innerHTML = ''; // Clear the current messages
-    snapshot.forEach((doc) => {
-      const messageData = doc.data();
-      console.log('Message from Firestore:', messageData); // Log each message from Firestore
-      addMessageToUI(messageData.text); // Display new messages
-    });
   });
 </script>
 
