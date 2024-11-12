@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Human Chat</title>
-  <link rel="stylesheet" href="../css/style.css"> <!-- Link to your external CSS file -->
+  <link rel="stylesheet" href="css/style.css"> <!-- Adjusted path for CSS file -->
 </head>
 <body>
 
@@ -13,7 +13,7 @@
 </header>
 
 <nav>
-  <a href="../index.html">Home</a>
+  <a href="index.html">Home</a>
   <a href="human.html">Human</a>
 </nav>
 
@@ -29,28 +29,36 @@
   <button id="sendButton">Send</button>
 </div>
 
+<!-- Load the Socket.io client library -->
+<script src="/socket.io/socket.io.js"></script>
 <script>
+  // Connect to the server
+  const socket = io();
+
   // Select elements from the DOM
   const messagesDiv = document.getElementById('messages');
   const messageInput = document.getElementById('messageInput');
   const sendButton = document.getElementById('sendButton');
 
-  // Function to add message to the chat box directly
+  // Function to add message to the chat box
   const addMessageToUI = (message) => {
     const messageElement = document.createElement('p');
     messageElement.textContent = message;
     messagesDiv.appendChild(messageElement);
   };
 
+  // Listen for messages from the server
+  socket.on('message', (message) => {
+    addMessageToUI(message); // Display incoming message
+  });
+
   // Send a new message when the send button is clicked
   sendButton.addEventListener('click', () => {
     const message = messageInput.value;
     if (message) {
-      console.log('Sending message:', message); // Log the message
-      // Add message to the UI immediately (so the user sees it)
-      addMessageToUI(message);
-      // Clear the input field
-      messageInput.value = '';
+      socket.emit('message', message); // Send message to server
+      addMessageToUI(`You: ${message}`); // Add message to UI immediately
+      messageInput.value = ''; // Clear the input field
     }
   });
 </script>

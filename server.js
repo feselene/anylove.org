@@ -1,27 +1,31 @@
-// server.js
 const express = require('express');
-const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const socketIo = require('socket.io');
 
 const app = express();
-const server = http.createServer(app);
+
+// Corrected paths for SSL certificate files
+const options = {
+  key: fs.readFileSync('cert/private-key.pem'),
+  cert: fs.readFileSync('cert/certificate.pem'),
+};
+
+const server = https.createServer(options, app);
 const io = socketIo(server);
 
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
-
-  // Broadcast messages to all connected clients
-  socket.on('message', (data) => {
-    io.emit('message', data);
+  socket.on('message', (message) => {
+    io.emit('message', message);
   });
-
-  // Notify when a user disconnects
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
 });
 
-const PORT = 3000;
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+server.listen(443, () => {
+  console.log('Server running on https://anylove.org');
+});
