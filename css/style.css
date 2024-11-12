@@ -42,12 +42,3 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin: 10px;
   }
-  
-  footer {
-    margin-top: auto;
-    background-color: #000000;
-    text-align: center;
-    padding: 10px;
-    width: 100%;
-  }
-  
