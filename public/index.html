@@ -1,0 +1,54 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Room</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    #chat { max-width: 600px; margin: 20px auto; padding: 10px; border: 1px solid #ccc; }
+    #messages { list-style-type: none; padding: 0; }
+    #messages li { padding: 8px; margin-bottom: 5px; border-bottom: 1px solid #ddd; }
+    #messageForm { display: flex; }
+    #messageInput { flex: 1; padding: 10px; }
+    #sendButton { padding: 10px; }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <h2>Chat Room</h2>
+    <ul id="messages"></ul>
+    <form id="messageForm">
+      <input id="messageInput" autocomplete="off" placeholder="Type a message..." />
+      <button id="sendButton">Send</button>
+    </form>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const messages = document.getElementById('messages');
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+
+    // Receive messages from server
+    socket.on('message', (data) => {
+      const item = document.createElement('li');
+      item.textContent = data;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // Send message to server
+    messageForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = messageInput.value;
+      if (message) {
+        socket.emit('message', message);
+        messageInput.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
